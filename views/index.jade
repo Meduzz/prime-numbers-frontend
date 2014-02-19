@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	.container
+		h1 Calculate primes
+		form.form-horizontal(method="post", role="form")
+			.form-group
+				label.col-xs-2.control-label(for="min") Min:
+				.col-xs-10
+					input#min.form-control(type="text", name="min", value="0")
+			.form-group
+				label.col-xs-2.control-label(for="max") Max:
+				.col-xs-10
+					input#max.form-control(type="text", name="max", placeholder="100")
+			.col-xs-offset-2
+				button#send.btn.btn-default(type="button") Send
+		.row
+			.col-xs-4 Min.
+				span.min
+			.col-xs-4 Avg.
+				span.avg
+			.col-xs-4 Max.
+				spam.max

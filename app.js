@@ -15,7 +15,6 @@ var pub = null;
 var app = express();
 http = http.createServer(app);
 var io = require("socket.io").listen(http);
-var socketHolder = {};
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -40,9 +39,18 @@ io.sockets.on('connection', function(socket){
 		data.key = key;
 		console.log(data);
 		
-		socketHolder[key] = socket;
-		
-		pub.write(JSON.stringify(data), 'utf-8');
+		sub = ctx.socket("SUB");
+		sub.connect({exchange:"test", topic:key, routing:"direct"}, function() {
+			// dont write until we're connected.
+			pub.write(JSON.stringify(data), 'utf-8');
+		});
+		sub.setEncoding('utf-8');
+
+		sub.on('data', function(outData){
+			outData = JSON.parse(outData);
+
+			socket.emit('out', outData.number);
+		});
 	});
 });
 
@@ -53,16 +61,7 @@ http.listen(app.get('port'), function(){
 });
 
 ctx.on('ready', function() {
-	sub = ctx.socket("SUB");
 	pub = ctx.socket("PUB");
 
 	pub.connect({exchange:"test", topic:"in", routing:"direct"});
-	sub.connect({exchange:"test", topic:"out", routing:"direct"});
-	sub.setEncoding('utf-8');
-
-	sub.on('data', function(data){
-		if (socketHolder[data.key] != null) {
-			socketHolder[data.key].emit(data.number);
-		}
-	});
 });

@@ -4,12 +4,12 @@ $(function(){
 		highest = null;
 		lowest = null;
 		
-		socket.emit('in', {min:$("#min").val(), max:$("#max").val()});
+		socket.emit('in', {min:parseInt($("#min").val()), max:parseInt($("#max").val())});
 		return false;
 	});
 });
 
-var socket = io.connect("http://localhost:3000/");
+var socket = io.connect();
 var numbers = [];
 var highest = null;
 var lowest = null;
